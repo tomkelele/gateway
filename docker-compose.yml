@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  gateway:
+    build:
+      context: ./main/dockers/nginx/
+    volumes:
+      - ./main/dockers/nginx/sites/:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    links:
+      - auth
+  service_1:
+    build:
+      context: ./service_1/dockers/nginx
+    volumes:
+      - ./service_1/dockers/nginx/sites/:/etc/nginx/conf.d
+      - ./service_1/src/:/var/www/html/
+    ports:
+      - 81:81
+    container_name: micro_service_1
+    links:
+      - service_1_workspace
+  service_1_workspace:
+    build:
+      context: ./service_1/dockers/workspace
+    ports:
+      - 9001:9000
+    volumes:
+      - ./service_1/src/:/var/www/html/
+#  service_2:
+#    build:
+#      context: ./service_2/dockers/nginx
+#    volumes:
+#      - ./service_2/dockers/nginx/sites/:/etc/nginx/conf.d
+#      - ./service_2/src/:/var/www/html/
+#    ports:
+#      - 82:82
+#  service_2_workspace:
+#    build:
+#      context: ./service_2/dockers/workspace
+#    ports:
+#      - 9002:9002
+#    volumes:
+#      - ./service_2/src/:/var/www/html/
+  auth:
+    build:
+      context: ./auth/dockers/nginx
+    volumes:
+      - ./auth/dockers/nginx/sites/:/etc/nginx/conf.d
+      - ./auth/src/:/var/www/html/
+    ports:
+      - 83:83
+    container_name: micro_auth
+    links:
+      - auth_workspace
+  auth_workspace:
+    build:
+      context: ./auth/dockers/workspace
+    ports:
+      - 9000:9000
+    volumes:
+      - ./auth/src/:/var/www/html/
+
